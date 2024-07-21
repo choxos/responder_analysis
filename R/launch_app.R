@@ -1,7 +1,7 @@
 #' @import shiny
 #' @import shinydashboard
 #' @import DT
-#' @importFrom stats pnorm qnorm asin sqrt
+#' @importFrom stats pnorm qnorm
 NULL
 
 #' Inverse Variance Meta-Analysis
@@ -11,19 +11,23 @@ NULL
 #' @param n Vector of sample sizes
 #' @param se Vector of standard errors (optional)
 #'
-#' @return If se is NULL, returns weighted mean. Otherwise, returns a vector with weighted mean and confidence interval.
+#' @return A vector with weighted mean and confidence interval
 #' @export
-iv_meta <- function(mean, sd, n, se = NULL) {
+iv_meta <- function(mean, sd = NULL, n = NULL, se = NULL) {
         if (is.null(se)) {
-                weighted_mean <- sum(mean * (1 / (sd / sqrt(n))^2)) / sum(1 / (sd / sqrt(n))^2)
-                return(weighted_mean)
-        } else {
-                weighted_mean <- sum(mean * (1 / se^2)) / sum(1 / se^2)
-                weighted_se <- sqrt(1 / sum(1 / se^2))
-                ci_lb <- weighted_mean - qnorm(0.975) * weighted_se
-                ci_ub <- weighted_mean + qnorm(0.975) * weighted_se
-                return(c(weighted_mean, ci_lb, ci_ub))
+                if (is.null(sd) || is.null(n)) {
+                        stop("If se is not provided, both sd and n must be provided")
+                }
+                se <- sd / sqrt(n)
         }
+        
+        weights <- 1 / se^2
+        weighted_mean <- sum(mean * weights) / sum(weights)
+        weighted_se <- sqrt(1 / sum(weights))
+        ci_lb <- weighted_mean - qnorm(0.975) * weighted_se
+        ci_ub <- weighted_mean + qnorm(0.975) * weighted_se
+        
+        return(c(weighted_mean, ci_lb, ci_ub))
 }
 
 #' Risk Ratio Meta-Analysis

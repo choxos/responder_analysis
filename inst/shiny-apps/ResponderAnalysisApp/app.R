@@ -164,11 +164,12 @@ server <- function(input, output, session) {
                         rv$data$pe = (1-pnorm((rv$mid-rv$data$change_e)/rv$data$sd_e))*100
                         rv$data$pc = (1-pnorm((rv$mid-rv$data$change_c)/rv$data$sd_c))*100
                         summary_ind = data.frame(pe = rv$data$pe, pc = rv$data$pc, n_e = rv$data$n_e, n_c = rv$data$n_c)
-                        summary_ind$RD = summary_ind$pe-summary_ind$pc
-                        summary_ind$SE = sqrt(((summary_ind$pe*(100-summary_ind$pe)/summary_ind$n_e) + (summary_ind$pc*(100-summary_ind$pc)/summary_ind$n_c)))
-                        rd_ind_result = ResponderAnalysisApp::iv_meta(summary_ind$RD, sd=summary_ind$SE, n=summary_ind$n_e)
+                        summary_ind$RD = summary_ind$pe - summary_ind$pc
+                        summary_ind$SE = sqrt(((summary_ind$pe/100)*(1-(summary_ind$pe/100))/summary_ind$n_e) + 
+                                                      ((summary_ind$pc/100)*(1-(summary_ind$pc/100))/summary_ind$n_c))
+                        rd_ind_result = ResponderAnalysisApp::iv_meta(mean = summary_ind$RD, se = summary_ind$SE)
                         rd_ind = rd_ind_result[1]
-                        ci_rd_fourth = rd_ind_result[2:3]
+                        ci_rd_id = rd_ind_result[2:3]
                         
                         # Create a single dataframe with all results
                         rv$results = data.frame(
@@ -176,8 +177,8 @@ server <- function(input, output, session) {
                                 PE = c(pe_median, pe_unweighted_mean, pe_weighted_mean, NA),
                                 PC = c(pc_median, pc_median, pc_median, NA),
                                 RD = c(rd_median, rd_unweighted_mean, rd_weighted_mean, rd_ind),
-                                CI_Lower = c(ci_rd_median[1], ci_rd_unweighted_mean[1], ci_rd_weighted_mean[1], ci_rd_fourth[1]),
-                                CI_Upper = c(ci_rd_median[2], ci_rd_unweighted_mean[2], ci_rd_weighted_mean[2], ci_rd_fourth[2])
+                                CI_Lower = c(ci_rd_median[1], ci_rd_unweighted_mean[1], ci_rd_weighted_mean[1], ci_rd_ind[1]),
+                                CI_Upper = c(ci_rd_median[2], ci_rd_unweighted_mean[2], ci_rd_weighted_mean[2], ci_rd_ind[2])
                         )
                         
                         # Round all numeric columns to 2 decimal places
