@@ -3,7 +3,6 @@ library(shiny)
 library(shinydashboard)
 library(DT)
 
-
 # Sample data
 sample_data <- read.csv(textConnection("study,change_e,sd_e,n_e,change_c,sd_c,n_c
 Study 1,0.9581395,1.257593,43,0.217777778,1.195501,45
@@ -77,7 +76,7 @@ server <- function(input, output, session) {
         rv <- reactiveValues(
                 data = NULL,
                 results = NULL,
-                mid = 0
+                mid = 1.0
         )
         
         # Download template
@@ -209,19 +208,19 @@ server <- function(input, output, session) {
         })
         
         # Render results table
-        output$results_table <- renderDataTable({
+        output$results_table <- DT::renderDT({
                 req(rv$results)
-                datatable(rv$results[, c("Method", "PE", "PC", "RD_with_CI")], 
-                          options = list(pageLength = 5, dom = 't'),
-                          rownames = FALSE)
+                DT::datatable(rv$results[, c("Method", "PE", "PC", "RD_with_CI")], 
+                              options = list(pageLength = 5, dom = 't'),
+                              rownames = FALSE)
         })
         
         # Render individual results table
-        output$individual_results_table <- renderDataTable({
+        output$individual_results_table <- DT::renderDT({
                 req(rv$individual_results)
-                datatable(rv$individual_results, 
-                          options = list(pageLength = 10, dom = 't'),
-                          rownames = FALSE)
+                DT::datatable(rv$individual_results, 
+                              options = list(pageLength = 10, dom = 't'),
+                              rownames = FALSE)
         })
         
         # Download results
@@ -249,12 +248,12 @@ server <- function(input, output, session) {
                 req(rv$results, rv$individual_results)
                 tagList(
                         h4("Aggregated Results"),
-                        dataTableOutput("results_table"),
+                        DT::DTOutput("results_table"),
                         br(),
                         downloadButton("download_results", "Download Aggregated Results"),
                         br(), br(),
                         h4("Individual Study Results"),
-                        dataTableOutput("individual_results_table"),
+                        DT::DTOutput("individual_results_table"),
                         br(),
                         downloadButton("download_individual_results", "Download Individual Results")
                 )
