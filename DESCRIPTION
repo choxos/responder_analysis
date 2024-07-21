@@ -1,0 +1,18 @@
+Package: ResponderAnalysisApp
+Title: Responder Analysis Shiny Application
+Version: 0.1.0
+Authors@R: 
+    person("Ahmad", "Sofi-Mahmudi", , "a.sofimahmudi@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-6829-0823"))
+Description: A Shiny application for performing responder analysis in clinical trials.
+License: GPL-3 + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    shiny,
+    shinydashboard,
+    DT
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
